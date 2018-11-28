@@ -16,8 +16,8 @@ category_id int REFERENCES Categories(id)
 
 CREATE TABLE Carts(
 id SERIAL PRIMARY KEY,
-product_id int NOT NULL REFERENCES Products(id),
-cutomer_id int NOT NULL REFERENCES Customers(id)
+product_id int  REFERENCES Products(id),
+cutomer_id int  REFERENCES Customers(id)
 );
 
 CREATE TABLE Customers(
@@ -56,4 +56,6 @@ INSERT INTO Carts (product_id,cutomer_id) VALUES
 (3,1),
 (4,2),
 (5,3),
-(6,4);
+(6,4),
+(4,1),
+(4,3);
