@@ -11,13 +11,11 @@
        $image_file_name = $_FILES['image']['name'];
        $file_size =$_FILES['image']['size'];
        $file_tmp =$_FILES['image']['tmp_name'];
-       $file_type=$_FILES['image']['type'];
-       $file_ext=strtolower(end(explode('.',$_FILES['image']['name'])));
+       $allowedTypes = array(IMAGETYPE_PNG, IMAGETYPE_JPEG, IMAGETYPE_JPG);
+       $detectedType = exif_imagetype($_FILES['image']['tmp_name']);
        
-       $expensions= array("jpeg","jpg","png");
-       
-       if(in_array($file_ext,$expensions)=== false){
-          $errors[]="extension not allowed, please choose a JPEG or PNG file.";
+       if(!in_array($detectedType, $allowedTypes)){
+          $errors[]="extension not allowed, please choose a JPEG or JPG or PNG file.";
        }
        
        if($file_size >= 3097152){
@@ -44,12 +42,11 @@
         $doc_file_name = $_FILES['fileToUpload']['name'];
         $file_size =$_FILES['fileToUpload']['size'];
         $file_tmp =$_FILES['fileToUpload']['tmp_name'];
-        $file_type=$_FILES['fileToUpload']['type'];
-        $file_ext=strtolower(end(explode('.',$_FILES['fileToUpload']['name'])));
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime = finfo_file($finfo, $_FILES['fileToUpload']['tmp_name']);
+        echo "File type:".$mime;
         
-        $expensions= array("docx");
-        
-        if(in_array($file_ext,$expensions)=== false){
+        if($mime!='application/vnd.openxmlformats-officedocument.wordprocessingml.document'){
            $errors[]="extension not allowed, please choose a docx file.";
         }
         
@@ -60,10 +57,6 @@
         if(empty($errors)==true){
            move_uploaded_file($file_tmp,"uploads/documents/".$doc_file_name);
            $doc_path="uploads/documents/".$doc_file_name;
-            // $myfile = fopen("uploads/documents/".$doc_file_name, "a") or die("Unable to open file!");
-            // $txt = "Together we can change the world, just one random act of kindness at a time.";
-            // fwrite($myfile, "\n". $txt);
-            // fclose($myfile);
           writeIntoDoc($doc_path);
           insertIntoDb($image_path);
         }else{
